@@ -1,0 +1,25 @@
+{
+  "name": "my-app",
+  "private": true,
+  "version": "0.0.1.development",
+  "description": "My web application",
+  "workspaces": [
+    "lib/*"
+  ],
+  "scripts": {
+    "test": "echo \"Warning: no test specified\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeremiah-clothier/release-please-demo"
+  },
+  "license": "UNLICENSED",
+  "homepage": "https://github.com/jeremiah-clothier/release-please-demo#readme",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "dependencies": {
+    "clothiernamedjeremiah-package-one": "^1.0.0",
+    "clothiernamedjeremiah-package-two": "^1.0.0"
+  }
+}
