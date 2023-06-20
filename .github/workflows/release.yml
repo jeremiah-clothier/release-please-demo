@@ -11,6 +11,9 @@ permissions:
   pull-requests: write
   packages: write
 
+env:
+  NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
 jobs:
   release:
     name: Release
@@ -32,15 +35,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: '.node-version'
+          registry-url: 'https://npm.pkg.github.com/'
 
       - name: 📥 Download deps
         if: ${{ steps.release.outputs.releases_created }}
         uses: bahmutov/npm-install@v1
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
+        
       - name: Publish package
         if: ${{ steps.release.outputs.releases_created }}
         run: npm publish --workspaces
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
