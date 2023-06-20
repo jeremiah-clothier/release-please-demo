@@ -19,7 +19,7 @@
     "registry": "https://npm.pkg.github.com"
   },
   "dependencies": {
-    "clothiernamedjeremiah-package-one": "^1.0.0",
-    "clothiernamedjeremiah-package-two": "^1.0.0"
+    "clothiernamedjeremiah-package-one": "*",
+    "clothiernamedjeremiah-package-two": "*"
   }
 }

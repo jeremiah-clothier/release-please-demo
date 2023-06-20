@@ -1,4 +1,3 @@
-name: release-please
 on:
   push:
     branches:
@@ -11,6 +10,9 @@ permissions:
   pull-requests: write
   packages: write
 
+env:
+  NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
 jobs:
   release:
     name: Release
@@ -22,25 +24,39 @@ jobs:
           command: manifest
           default-branch: main
 
-      # The logic below handles the npm publication
-      - name: ⬇️ Checkout repo
-        if: ${{ steps.release.outputs.releases_created }}
+      - name: Checkout repository
+        if: ${{ steps.release.outputs.releases_created == false }}
         uses: actions/checkout@v3
+        with:
+          ref: "${{ steps.release.outputs.releases_created && 'main' || 'release-please--branches--main' }}"
 
-      - name: 😻 Setup node
-        if: ${{ steps.release.outputs.releases_created }}
+      - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version-file: '.node-version'
+          # Configure NPM to point to Github's package registry.
+          registry-url: https://npm.pkg.github.com/
 
-      - name: 📥 Download deps
-        if: ${{ steps.release.outputs.releases_created }}
+      - name: Install deps
         uses: bahmutov/npm-install@v1
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Publish package
+      # This step only executes when a Release PR has been created or updated.
+      # It will run the `npm install` command and commit any changes in the
+      # package-lock.json file. Ideally, release-please would update this file itself
+      # and we could remove conditional logic from the release workflow
+      - name: Update package-lock.json
+        if: ${{ steps.release.outputs.releases_created == false }}
+        run: |
+          npm install
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git add package-lock.json
+          git diff-index --quiet HEAD || git commit -m "chore: release main" -m "running npm install in github release workflow to update package-lock.json"
+          git push
+
+      # Release Please has already incremented versions and published tags, so we just
+      # need to publish all unpublished versions to NPM here
+      # See: https://github.com/lerna/lerna/tree/main/commands/publish#bump-from-package
+      - name: Publish packages to the Github registry
         if: ${{ steps.release.outputs.releases_created }}
-        run: npm publish --workspaces
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        run: npm publish --workspaces --dry-run
