@@ -1,7 +1,7 @@
 {
   "plugins": ["node-workspace"],
   "packages": {
-    "lib/clothiernamedjeremiah-package-one": {},
-    "lib/clothiernamedjeremiah-package-two": {}
+    "lib/package-one": {},
+    "lib/package-two": {}
   }
 }
