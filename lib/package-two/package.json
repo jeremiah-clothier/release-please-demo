@@ -1,0 +1,14 @@
+{
+  "name": "clothiernamedjeremiah-package-two",
+  "version": "1.0.0",
+  "description": "The second package",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeremiah-clothier/release-please-demo.git"
+  },
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  }
+}
