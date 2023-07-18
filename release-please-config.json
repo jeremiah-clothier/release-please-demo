@@ -7,12 +7,12 @@
   "extra-files": [
     {
       "type": "json",
-      "path": "../../package-lock.json",
+      "path": "/package-lock.json",
       "jsonpath": "$['packages']['lib/package-one']['version']"
     },
     {
       "type": "json",
-      "path": "../../package-lock.json",
+      "path": "/package-lock.json",
       "jsonpath": "$['packages']['lib/package-two']['version']"
     }
   ]
