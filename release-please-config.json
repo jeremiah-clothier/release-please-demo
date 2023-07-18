@@ -1,23 +1,19 @@
 {
   "plugins": ["node-workspace"],
   "packages": {
-    "lib/package-one": {
-      "extra-files": [
-        {
-          "type": "json",
-          "path": "package-lock.json",
-          "jsonpath": "$.packages.lib/package-one.version"
-        }
-      ]
+    "lib/package-one": {},
+    "lib/package-two": {}
+  },
+  "extra-files": [
+    {
+      "type": "json",
+      "path": "package-lock.json",
+      "jsonpath": "$.packages.lib/package-one.version"
     },
-    "lib/package-two": {
-      "extra-files": [
-        {
-          "type": "json",
-          "path": "package-lock.json",
-          "jsonpath": "$.packages.lib/package-two.version"
-        }
-      ]
+    {
+      "type": "json",
+      "path": "package-lock.json",
+      "jsonpath": "$.packages.lib/package-one.version"
     }
-  }
+  ]
 }
