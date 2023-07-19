@@ -21,9 +21,11 @@ jobs:
           command: manifest
           default-branch: main
       
-      - name: Log Output for release-please
+      - name: Check if Release PR exists
+        id: release-pr-exists
         run: |
           echo ${{ steps.release.outputs.pr }}
+          echo ${{ steps.release.outputs.prs }}
           echo ${{ toJSON(steps.release.outputs) }}
 
       - name: ⬇️ Checkout repo
