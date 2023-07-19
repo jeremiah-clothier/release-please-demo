@@ -26,12 +26,11 @@ jobs:
         run: |
           echo ${{ steps.release.outputs.pr }}
           echo ${{ steps.release.outputs.prs }}
-          echo ${{ toJSON(steps.release.outputs) }}
 
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
         with:
-          ref: "${{ steps.release.outputs.releases_created && 'main' || 'release-please--branches--main' }}"
+          ref: "${{ steps.release.outputs.pr && 'main' || 'release-please--branches--main' }}"
 
       - name: 😻 Setup node
         uses: actions/setup-node@v3
