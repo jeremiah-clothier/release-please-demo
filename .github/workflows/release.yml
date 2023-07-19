@@ -24,7 +24,7 @@ jobs:
       - name: Log Output for release-please
         run: |
           echo ${{ steps.release.outputs.pr }}
-          echo ${{ steps.release.outputs }}
+          echo ${{ toJSON(steps.release.outputs) }}
 
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
