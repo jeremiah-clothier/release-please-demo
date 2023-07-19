@@ -26,6 +26,11 @@ jobs:
         with:
           ref: "${{ steps.release.outputs.releases_created && 'main' || 'release-please--branches--main' }}"
 
+      - name: Log Output for release-please
+        run: |
+          echo ${{ steps.release.outputs.pr }}
+          echo ${{ steps.release.outputs }}
+
       - name: 😻 Setup node
         uses: actions/setup-node@v3
         with:
