@@ -22,15 +22,20 @@ jobs:
           default-branch: main
       
       - name: Check if Release PR exists
-        id: release-pr-exists
+        id: check_release_pr
         run: |
-          echo ${{ steps.release.outputs.pr }}
-          echo ${{ steps.release.outputs.prs }}
+          release_please_branch=release-please--branches--main
+          release_please_branch_exists=$(git ls-remote --heads origin ${release_please_branch})
+          if [[ -z ${existed_in_remote} ]]; then
+              echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+              echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v3
         with:
-          ref: "${{ steps.release.outputs.pr && 'main' || 'release-please--branches--main' }}"
+          ref: "${{ steps.check_release_pr.outputs.exists && 'main' || 'release-please--branches--main' }}"
 
       - name: 😻 Setup node
         uses: actions/setup-node@v3
@@ -48,7 +53,7 @@ jobs:
       # package-lock.json file. Ideally, release-please would update this file itself
       # and we could remove conditional logic from the release workflow
       - name: Update package-lock.json
-        if: ${{ steps.release.outputs.releases_created == false }}
+        if: ${{ steps.check_release_pr.outputs.exists }}
         run: |
           npm install
           git config user.name github-actions[bot]
