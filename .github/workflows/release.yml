@@ -23,6 +23,7 @@ jobs:
 
       - name: ⬇️ Checkout repo (release-please PR branch)
         id: checkout_release_please_branch
+        if: ${{ !steps.release.outputs.releases_created }}
         uses: actions/checkout@v3
         continue-on-error: true
         with:
@@ -50,6 +51,7 @@ jobs:
       - name: Update package-lock.json
         if: ${{ steps.checkout_release_please_branch.conclusion == 'success' }}
         run: |
+          echo ${{steps.checkout_release_please_branch.conclusion}}
           npm install
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
