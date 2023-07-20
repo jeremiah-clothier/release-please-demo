@@ -21,12 +21,11 @@ jobs:
           command: manifest
           default-branch: main
       
+      # limitation because we haven't checked out repo yet :/
       - name: Check if Release PR exists
         id: check_release_pr
         run: |
-          release_please_branch=release-please--branches--main
-          release_please_branch_exists=$(git ls-remote --heads origin ${release_please_branch})
-          if [[ -z ${existed_in_remote} ]]; then
+          if [[ -z ${steps.release.outputs.releases_created.pr} ]]; then
               echo "exists=true" >> "$GITHUB_OUTPUT"
           else
               echo "exists=false" >> "$GITHUB_OUTPUT"
