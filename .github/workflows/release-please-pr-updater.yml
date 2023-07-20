@@ -20,10 +20,10 @@ jobs:
           ref: release-please--branches--main
 
       - name: 😻 Setup node
-          uses: actions/setup-node@v3
-          with:
-            node-version-file: '.node-version'
-            registry-url: 'https://npm.pkg.github.com/'
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.node-version'
+          registry-url: 'https://npm.pkg.github.com/'
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
