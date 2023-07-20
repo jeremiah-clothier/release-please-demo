@@ -21,24 +21,41 @@ jobs:
           command: manifest
           default-branch: main
 
-      - name: ⬇️ Checkout repo
+      - name: ⬇️ Checkout repo (release-please PR branch)
+        id: checkout_release_please_branch
+        uses: actions/checkout@v3
+        continue-on-error: true
+        with:
+          ref: release-please--branches--main
+
+      - name: ⬇️ Checkout repo (default branch)
         if: ${{ steps.release.outputs.releases_created }}
         uses: actions/checkout@v3
-        with:
-          ref: main
 
       - name: 😻 Setup node
-        if: ${{ steps.release.outputs.releases_created }}
         uses: actions/setup-node@v3
         with:
           node-version-file: '.node-version'
           registry-url: 'https://npm.pkg.github.com/'
 
       - name: 📥 Download deps
-        if: ${{ steps.release.outputs.releases_created }}
         uses: bahmutov/npm-install@v1
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      # This step only executes when a Release PR has been created or updated.
+      # It will run the `npm install` command and commit any changes in the
+      # package-lock.json file. Ideally, release-please would update this file itself
+      # and we could remove conditional logic from the release workflow
+      - name: Update package-lock.json
+        if: ${{ steps.checkout_release_please_branch.conclusion == 'success' }}
+        run: |
+          npm install
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git add package-lock.json
+          git diff-index --quiet HEAD || git commit -m "chore: update package-lock.json" -m "running npm install in github release workflow to update package-lock.json"
+          git push
 
 
       # Release Please has already incremented versions and published tags, so we just
