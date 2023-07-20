@@ -23,14 +23,13 @@ jobs:
 
       - name: ⬇️ Checkout repo (release-please PR branch)
         id: checkout_release_please_branch
-        if: ${{ !steps.release.outputs.releases_created }}
+        if: ${{ steps.release.outputs.releases_created == false }}
         uses: actions/checkout@v3
-        continue-on-error: true
         with:
           ref: release-please--branches--main
 
       - name: ⬇️ Checkout repo (default branch)
-        if: ${{ steps.release.outputs.releases_created }}
+        if: ${{ failure() }}
         uses: actions/checkout@v3
 
       - name: 😻 Setup node
