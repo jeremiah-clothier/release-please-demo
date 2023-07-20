@@ -17,50 +17,30 @@ jobs:
     steps:
       - uses: google-github-actions/release-please-action@v3
         id: release
+        if: ${{ steps.release.outputs.releases_created }}
         with:
           command: manifest
           default-branch: main
-      
-      # limitation because we haven't checked out repo yet :/
-      - name: Check if Release PR exists
-        id: check_release_pr
-        run: |
-          echo ${{ steps.release.outputs.prs }}
-          if [[ -z "${{ steps.release.outputs.prs }}" ]]; then
-              echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-              echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
 
       - name: ⬇️ Checkout repo
+        if: ${{ steps.release.outputs.releases_created }}
         uses: actions/checkout@v3
         with:
-          ref: "${{ steps.check_release_pr.outputs.exists && 'main' || 'release-please--branches--main' }}"
+          ref: main
 
       - name: 😻 Setup node
+        if: ${{ steps.release.outputs.releases_created }}
         uses: actions/setup-node@v3
         with:
           node-version-file: '.node-version'
           registry-url: 'https://npm.pkg.github.com/'
 
       - name: 📥 Download deps
+        if: ${{ steps.release.outputs.releases_created }}
         uses: bahmutov/npm-install@v1
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      # This step only executes when a Release PR has been created or updated.
-      # It will run the `npm install` command and commit any changes in the
-      # package-lock.json file. Ideally, release-please would update this file itself
-      # and we could remove conditional logic from the release workflow
-      - name: Update package-lock.json
-        if: ${{ steps.check_release_pr.outputs.exists }}
-        run: |
-          npm install
-          git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
-          git add package-lock.json
-          git diff-index --quiet HEAD || git commit -m "chore: update package-lock.json" -m "running npm install in github release workflow to update package-lock.json"
-          git push
 
       # Release Please has already incremented versions and published tags, so we just
       # need to publish all unpublished versions to NPM here
