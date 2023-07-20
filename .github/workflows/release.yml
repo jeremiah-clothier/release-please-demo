@@ -25,8 +25,8 @@ jobs:
       - name: Check if Release PR exists
         id: check_release_pr
         run: |
-          echo ${{ steps.release.outputs.pr }}
-          if [[ -z "${{ steps.release.outputs.pr }}" ]]; then
+          echo ${{ steps.release.outputs.prs }}
+          if [[ -z "${{ steps.release.outputs.prs }}" ]]; then
               echo "exists=true" >> "$GITHUB_OUTPUT"
           else
               echo "exists=false" >> "$GITHUB_OUTPUT"
