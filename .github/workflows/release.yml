@@ -1,3 +1,4 @@
+name: release-packages
 on:
   push:
     branches:
@@ -21,7 +22,7 @@ jobs:
           command: manifest
           default-branch: main
 
-      - name: ⬇️ Checkout repo (default branch)
+      - name: ⬇️ Checkout repo
         if: ${{ steps.release.outputs.releases_created }}
         uses: actions/checkout@v3
 
@@ -46,14 +47,16 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+  # This job will fail if the Release PR branch (release-please--branches--main) doesn't exist.
+  # We consider a failure behavior okay because there's not a great way to check if the
+  # "release-please--branches--main" branch exists prior to checking out the repo in a github workflow
   update_release_pr:
     needs: release
-    name: update release pr
+    name: update release PR
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - name: ⬇️ Checkout repo (release-please PR branch)
-        id: checkout_release_please_branch
+      - name: ⬇️ Checkout repo (release PR branch)
         uses: actions/checkout@v3
         with:
           ref: release-please--branches--main
@@ -75,10 +78,9 @@ jobs:
       # and we could remove conditional logic from the release workflow
       - name: Update package-lock.json
         run: |
-          echo ${{steps.checkout_release_please_branch.conclusion}}
           npm install
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
           git add package-lock.json
-          git diff-index --quiet HEAD || git commit -m "chore: update package-lock.json" -m "running npm install in github release workflow to update package-lock.json"
+          git diff-index --quiet HEAD || git commit -m "chore: update package-lock.json"
           git push
