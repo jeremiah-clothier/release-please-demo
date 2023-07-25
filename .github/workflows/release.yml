@@ -16,14 +16,14 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v3
-        id: release
-        with:
-          command: manifest
-          default-branch: main
+      # - uses: google-github-actions/release-please-action@v3
+      #   id: release
+      #   with:
+      #     command: manifest
+      #     default-branch: main
       
       - name: trying to detect branch
-        run: git ls-remote ${{ github.repository }}
+        run: git ls-remote ${{ github.server_url }}/${{ github.repository }}
 
       # - name: ⬇️ Checkout repo
       #   uses: actions/checkout@v3
