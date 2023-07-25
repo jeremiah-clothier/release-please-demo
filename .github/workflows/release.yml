@@ -26,15 +26,12 @@ jobs:
         id: detect_release_pr
         run: |
           release_branch_exists="false"
-          git ls-remote --heads ${{ github.server_url }}/${{ github.repository }} release-please--branches--main
           BRANCH=$(git ls-remote --heads ${{ github.server_url }}/${{ github.repository }} release-please--branches--main) 
-          if [[ -z ${BRANCH} ]]; then
+          if [[ ! -z "${BRANCH}" ]]; then
               release_branch_exists="true"
           fi
 
           echo "release_branch_exists=$release_branch_exists" >> "$GITHUB_OUTPUT"
-          echo $release_branch_exists
-
 
       - name: ⬇️ Checkout repo
         if: ${{ steps.release.outputs.releases_created || steps.detect_release_pr.release_branch_exists }}
