@@ -25,10 +25,10 @@ jobs:
       - name: Check if release-please pr branch exists
         id: detect_release_pr
         run: |
-          release_branch_exists=false
+          release_branch_exists=0
           BRANCH=$(git ls-remote --heads ${{ github.server_url }}/${{ github.repository }} release-please--branches--main) 
           if [[ ! -z "${BRANCH}" ]]; then
-              release_branch_exists=true
+              release_branch_exists=1
           fi
 
           echo "release_branch_exists=$release_branch_exists" >> "$GITHUB_OUTPUT"
