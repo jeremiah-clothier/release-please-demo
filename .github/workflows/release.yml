@@ -23,7 +23,7 @@ jobs:
           default-branch: main
       
       - name: trying to detect branch
-        run: git ls-remote
+        run: git ls-remote ${{ github.repository }}
 
       # - name: ⬇️ Checkout repo
       #   uses: actions/checkout@v3
