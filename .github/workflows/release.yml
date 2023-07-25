@@ -27,28 +27,28 @@ jobs:
         run: |
           release_branch_exists="false"
           BRANCH=$(git ls-remote --heads ${{ github.server_url }}/${{ github.repository }} release-please--branches--main) 
-          echo $BRANCH
           if [[ ! -z "${BRANCH}" ]]; then
               release_branch_exists="true"
           fi
 
           echo "release_branch_exists=$release_branch_exists" >> "$GITHUB_OUTPUT"
+          echo "[debug] outputs.release_branch_exists=$release_branch_exists"
 
       - name: ⬇️ Checkout repo
-        if: ${{ steps.release.outputs.releases_created || steps.detect_release_pr.release_branch_exists }}
+        if: ${{ steps.release.outputs.releases_created || steps.detect_release_pr.outputs.release_branch_exists }}
         uses: actions/checkout@v3
         with:
-          ref: ${{ steps.detect_release_pr.release_branch_exists && 'release-please--branches--main' || 'main' }}
+          ref: ${{ steps.detect_release_pr.outputs.release_branch_exists && 'release-please--branches--main' || 'main' }}
 
       - name: 😻 Setup node
-        if: ${{ steps.release.outputs.releases_created || steps.detect_release_pr.release_branch_exists }}
+        if: ${{ steps.release.outputs.releases_created || steps.detect_release_pr.outputs.release_branch_exists }}
         uses: actions/setup-node@v3
         with:
           node-version-file: '.node-version'
           registry-url: 'https://npm.pkg.github.com/'
 
       - name: 📥 Download deps
-        if: ${{ steps.release.outputs.releases_created || steps.detect_release_pr.release_branch_exists }}
+        if: ${{ steps.release.outputs.releases_created || steps.detect_release_pr.outputs.release_branch_exists }}
         uses: bahmutov/npm-install@v1
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -66,7 +66,7 @@ jobs:
       # package-lock.json file. Ideally, release-please would update this file itself
       # and we could remove conditional logic from the release workflow
       - name: Update package-lock.json
-        if: ${{ steps.detect_release_pr.release_branch_exists }}
+        if: ${{ steps.detect_release_pr.outputs.release_branch_exists }}
         run: |
           npm install
           git config user.name github-actions[bot]
