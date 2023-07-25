@@ -1,5 +1,19 @@
 {
-  "plugins": ["node-workspace"],
+  "plugins": [
+    {
+      "type": "node-workspace",
+      "merge": false
+    },
+    {
+      "type": "linked-versions",
+      "components": [
+        "package-one",
+        "package-two"
+      ]
+    }
+  ],
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
   "packages": {
     "lib/package-one": {},
     "lib/package-two": {}
