@@ -16,73 +16,62 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
-      # - uses: google-github-actions/release-please-action@v3
-      #   id: release
-      #   with:
-      #     command: manifest
-      #     default-branch: main
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          command: manifest
+          default-branch: main
       
-      - name: trying to detect branch
-        run: git ls-remote ${{ github.server_url }}/${{ github.repository }}
+      - name: Check if release-please pr branch exists
+        id: detect_release_pr
+        run: |
+          release_branch_exists="false"
+          git ls-remote --heads ${{ github.server_url }}/${{ github.repository }} release-please--branches--main
+          BRANCH=$(git ls-remote --heads ${{ github.server_url }}/${{ github.repository }} release-please--branches--main) 
+          if [[ -z ${BRANCH} ]]; then
+              release_branch_exists="true"
+          fi
 
-      # - name: ⬇️ Checkout repo
-      #   uses: actions/checkout@v3
+          echo "release_branch_exists=$release_branch_exists" >> "$GITHUB_OUTPUT"
 
-      # - name: 😻 Setup node
-      #   if: ${{ steps.release.outputs.releases_created }}
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version-file: '.node-version'
-      #     registry-url: 'https://npm.pkg.github.com/'
 
-      # - name: 📥 Download deps
-      #   if: ${{ steps.release.outputs.releases_created }}
-      #   uses: bahmutov/npm-install@v1
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.detect_release_pr.release_branch_exists && 'release-please--branches--main' || 'main' }}
 
-      # # Release Please has already incremented versions and published tags, so we just
-      # # need to publish all unpublished versions to NPM here
-      # - name: Publish package
-      #   if: ${{ steps.release.outputs.releases_created }}
-      #   run: npm publish --workspaces --dry-run
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: 😻 Setup node
+        if: ${{ steps.release.outputs.releases_created || steps.detect_release_pr.release_branch_exists }}
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.node-version'
+          registry-url: 'https://npm.pkg.github.com/'
 
-  # This job will fail if the Release PR branch (release-please--branches--main) doesn't exist.
-  # We consider a failure behavior okay because there's not a great way to check if the
-  # "release-please--branches--main" branch exists prior to checking out the repo in a github workflow
-  # update_release_pr:
-  #   needs: release
-  #   name: update release PR
-  #   runs-on: ubuntu-latest
-  #   continue-on-error: true
-  #   steps:
-  #     - name: ⬇️ Checkout repo (release PR branch)
-  #       uses: actions/checkout@v3
-  #       with:
-  #         ref: release-please--branches--main
+      - name: 📥 Download deps
+        if: ${{ steps.release.outputs.releases_created || steps.detect_release_pr.release_branch_exists }}
+        uses: bahmutov/npm-install@v1
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-  #     - name: 😻 Setup node
-  #       uses: actions/setup-node@v3
-  #       with:
-  #         node-version-file: '.node-version'
-  #         registry-url: 'https://npm.pkg.github.com/'
-
-  #     - name: 📥 Download deps
-  #       uses: bahmutov/npm-install@v1
-  #       env:
-  #         NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
-  #     # This step only executes when a Release PR has been created or updated.
-  #     # It will run the `npm install` command and commit any changes in the
-  #     # package-lock.json file. Ideally, release-please would update this file itself
-  #     # and we could remove conditional logic from the release workflow
-  #     - name: Update package-lock.json
-  #       run: |
-  #         npm install
-  #         git config user.name github-actions[bot]
-  #         git config user.email github-actions[bot]@users.noreply.github.com
-  #         git add package-lock.json
-  #         git diff-index --quiet HEAD || git commit -m "chore: update package-lock.json"
-  #         git push
+      # Release Please has already incremented versions and published tags, so we just
+      # need to publish all unpublished versions to NPM here
+      - name: Publish package
+        if: ${{ steps.release.outputs.releases_created }}
+        run: npm publish --workspaces --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      
+      # This step only executes when a Release PR has been created or updated.
+      # It will run the `npm install` command and commit any changes in the
+      # package-lock.json file. Ideally, release-please would update this file itself
+      # and we could remove conditional logic from the release workflow
+      - name: Update package-lock.json
+        if: ${{ steps.detect_release_pr.release_branch_exists }}
+        run: |
+          npm install
+          git config user.name github-actions[bot]
+          git config user.email github-actions[bot]@users.noreply.github.com
+          git add package-lock.json
+          git diff-index --quiet HEAD || git commit -m "chore: update package-lock.json"
+          git push
+  
