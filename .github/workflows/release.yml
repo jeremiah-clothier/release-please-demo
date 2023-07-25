@@ -27,6 +27,7 @@ jobs:
         run: |
           release_branch_exists="false"
           BRANCH=$(git ls-remote --heads ${{ github.server_url }}/${{ github.repository }} release-please--branches--main) 
+          echo $BRANCH
           if [[ ! -z "${BRANCH}" ]]; then
               release_branch_exists="true"
           fi
