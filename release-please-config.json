@@ -6,6 +6,7 @@
     },
     {
       "type": "linked-versions",
+      "groupName": "release-please-demo",
       "components": [
         "package-one",
         "package-two"
