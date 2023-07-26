@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.4](https://github.com/jeremiah-clothier/release-please-demo/compare/clothiernamedjeremiah-package-two-v1.1.3...clothiernamedjeremiah-package-two-v1.1.4) (2023-07-26)
+
+
+### Bug Fixes
+
+* **package-two:** i fixed something ([80f28db](https://github.com/jeremiah-clothier/release-please-demo/commit/80f28dbb1ccddb8fb50e12ff9f1f8d081b18d5a4))
+
 ## [1.1.3](https://github.com/jeremiah-clothier/release-please-demo/compare/clothiernamedjeremiah-package-two-v1.1.2...clothiernamedjeremiah-package-two-v1.1.3) (2023-07-25)
 
 
