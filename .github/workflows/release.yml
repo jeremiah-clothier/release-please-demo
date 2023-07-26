@@ -21,12 +21,18 @@ jobs:
         with:
           command: manifest
           default-branch: main
-      
-      - name: Check if release-please pr branch exists
+
+      - name: ⬇️ Checkout repo (default branch)
+        uses: actions/checkout@v3
+
+      # Some steps in the workflow should only run if a release pr branch exists.
+      # This step checks if the release pr branch exists and exposes an output variable for future
+      # steps to reference.
+      - name: Check if release pr branch exists
         id: find_release_branch
         run: |
           found="false"
-          BRANCH=$(git ls-remote --heads ${{ github.server_url }}/${{ github.repository }} release-please--branches--main) 
+          BRANCH=$(git ls-remote --heads ${{ github.server_url }}/${{ github.repository }} release-please--branches--main)
           if [[ ! -z "${BRANCH}" ]]; then
               found="true"
           fi
@@ -34,11 +40,11 @@ jobs:
           echo "found=$found" >> "$GITHUB_OUTPUT"
           echo "[debug] outputs.found=$found"
 
-      - name: ⬇️ Checkout repo
-        if: ${{ steps.release.outputs.releases_created || steps.find_release_branch.outputs.found == 'true' }}
+      - name: ⬇️ Checkout repo ("release-please--branches--main" branch)
+        if: ${{ steps.find_release_branch.outputs.found == 'true' }}
         uses: actions/checkout@v3
         with:
-          ref: ${{ steps.find_release_branch.outputs.found == 'true' && 'release-please--branches--main' || 'main' }}
+          ref: release-please--branches--main
 
       - name: 😻 Setup node
         if: ${{ steps.release.outputs.releases_created || steps.find_release_branch.outputs.found == 'true' }}
@@ -60,7 +66,7 @@ jobs:
         run: npm publish --workspaces --dry-run
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      
+
       # This step only executes when a Release PR has been created or updated.
       # It will run the `npm install` command and commit any changes in the
       # package-lock.json file. Ideally, release-please would update this file itself
@@ -74,4 +80,3 @@ jobs:
           git add package-lock.json
           git diff-index --quiet HEAD || git commit -m "chore: update package-lock.json"
           git push
-  
