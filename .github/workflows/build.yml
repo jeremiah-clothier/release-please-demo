@@ -1,11 +1,5 @@
 name: Build-a-Bob
-on:
-  workflow_run:
-    # After the release-packages workflow runs, we'll run a build
-    workflows: [release-packages]
-    types:
-      - completed
-  push:
+on: [push]
 
 jobs:
   build:
