@@ -1,0 +1,18 @@
+name: Build-a-Bob
+on:
+  workflow_run:
+    # After the release-packages workflow runs, we'll run a build
+    workflows: [release-packages]
+    types:
+      - completed
+  push:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say hi
+        run: echo 你好
+      - name: Say bye
+        run: echo 再见
