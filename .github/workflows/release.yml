@@ -1,13 +1,13 @@
 name: release-packages
 on:
-  workflow_run:
-    workflows: [Build-a-Bob]
-    branches: [main]
-    types: [completed]
+  push:
+    branches:
+      - main
 
 # Modify the default permissions granted to GITHUB_TOKEN
 # see: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
 permissions:
+  actions: write
   contents: write
   pull-requests: write
   packages: write
@@ -83,3 +83,13 @@ jobs:
           git add package-lock.json
           git diff-index --quiet HEAD || git commit -m "chore: update package-lock.json"
           git push
+
+      # The PR created by this workflow will not trigger the "build" workflow.
+      # We manually trigger it ourselves using the GitHub CLI. GitHub intentionally
+      # prevents workflows from triggering other workflows to guard against recursive behavior.
+      - name: Trigger the build workflow for the "release-please--branches--main" branch
+        if: ${{ steps.find_release_branch.outputs.found == 'true' }}
+        run: gh workflow run build.yml --ref release-please--branches--main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
