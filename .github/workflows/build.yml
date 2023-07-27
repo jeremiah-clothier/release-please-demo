@@ -10,3 +10,8 @@ jobs:
         run: echo 你好
       - name: Say bye
         run: echo 再见
+      - name: Branch
+        run: |
+          echo [debug] ${{ github.server_url }}/${{ github.repository }}
+          echo [debug] ${{ github.ref }}
+          echo [debug] ${{ github.ref_name }}
