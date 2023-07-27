@@ -16,8 +16,6 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    # Only release the package if we have a successful build
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: google-github-actions/release-please-action@v3
         id: release
