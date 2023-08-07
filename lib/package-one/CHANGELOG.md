@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.1](https://github.com/jeremiah-clothier/release-please-demo/compare/clothiernamedjeremiah-package-one-v1.1.0...clothiernamedjeremiah-package-one-v1.1.1) (2023-08-07)
+
+
+### Bug Fixes
+
+* needs better logging ([94d4577](https://github.com/jeremiah-clothier/release-please-demo/commit/94d4577ccab880d18ea608de45cc3639f8d47af0))
+
 ## [1.1.0](https://github.com/jeremiah-clothier/release-please-demo/compare/clothiernamedjeremiah-package-one-v1.0.1...clothiernamedjeremiah-package-one-v1.1.0) (2023-07-19)
 
 
