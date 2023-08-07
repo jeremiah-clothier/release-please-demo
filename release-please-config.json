@@ -1,22 +1,8 @@
 {
-  "plugins": [
-    {
-      "type": "node-workspace",
-      "merge": false
-    },
-    {
-      "type": "linked-versions",
-      "groupName": "release-please-demo",
-      "components": [
-        "package-one",
-        "package-two"
-      ]
-    }
-  ],
+  "plugins": ["node-workspace"],
   "bump-minor-pre-major": true,
   "bump-patch-for-minor-pre-major": true,
   "packages": {
-    "lib/package-one": {},
-    "lib/package-two": {}
+    "lib/package-one": {}
   }
 }
